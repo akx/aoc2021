@@ -29,16 +29,21 @@ def check_win(grid: List[List[int]], drawn_numbers: List[int]) -> Tuple[bool, in
     return (False, 0)
 
 
-def main():
+def main(first: bool):
     numbers, grids = read_data("../inputs/d04.txt")
+    won_grid_ids = set()
     for n in range(len(numbers)):
         drawn_numbers = numbers[:n]
-        for i, grid in enumerate(grids):
+        for grid_id, grid in enumerate(grids):
+            if grid_id in won_grid_ids:
+                continue
             win, checksum = check_win(grid, drawn_numbers)
             if win:
-                print(i, win, checksum * drawn_numbers[-1])
-                return
+                print(grid_id, checksum * drawn_numbers[-1])
+                won_grid_ids.add(grid_id)
+                if first:
+                    return
 
 
 if __name__ == "__main__":
-    main()
+    main(first=False)
