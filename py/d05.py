@@ -7,6 +7,14 @@ def parse_tup(tup: str) -> Tuple[int, int]:
     return tuple(map(int, tup.split(",", 1)))
 
 
+def cmp_0(a, b):
+    if a < b:
+        return -1
+    if a > b:
+        return +1
+    return 0
+
+
 @dataclasses.dataclass
 class Seg:
     x0: int
@@ -19,8 +27,6 @@ class Seg:
         a, _, b = s.strip().partition(" -> ")
         x0, y0 = parse_tup(a)
         x1, y1 = parse_tup(b)
-        x0, x1 = sorted((x0, x1))
-        y0, y1 = sorted((y0, y1))
         seg = Seg(x0=x0, y0=y0, x1=x1, y1=y1)
         return seg
 
@@ -29,13 +35,18 @@ class Seg:
         return self.x0 == self.x1 or self.y0 == self.y1
 
     def iter_points(self) -> Iterable[Tuple[int, int]]:
-        if self.x0 == self.x1:  # vert
-            yield from ((self.x0, y) for y in range(self.y0, self.y1 + 1))
-            return
-        if self.y0 == self.y1:  # horz
-            yield from ((x, self.y0) for x in range(self.x0, self.x1 + 1))
-            return
-        raise NotImplementedError("Ni!")
+        dx = cmp_0(self.x1, self.x0)
+        dy = cmp_0(self.y1, self.y0)
+        x, y = self.x0, self.y0
+        assert (dx, dy) != (0, 0), self
+        print((x, y), "delta=", (dx, dy))
+        while True:
+            yield (x, y)
+            x += dx
+            y += dy
+            if (x, y) == (self.x1, self.y1):
+                yield (x, y)
+                return
 
 
 def parse_input(fn):
@@ -47,8 +58,6 @@ def parse_input(fn):
 def main():
     cnt = collections.Counter()
     for seg in parse_input("../inputs/d05.txt"):
-        if not seg.is_horz_or_vert:
-            continue
         for pt in seg.iter_points():
             cnt[pt] += 1
     for y in range(10):
@@ -56,7 +65,6 @@ def main():
         print(line)
     overlaps = len([pt for (pt, n) in cnt.items() if n > 1])
     print(overlaps)
-
 
 
 if __name__ == '__main__':
