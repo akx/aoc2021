@@ -23,7 +23,7 @@ class Seg:
     y1: int
 
     @classmethod
-    def from_str(cls, s: str) -> 'Seg':
+    def from_str(cls, s: str) -> "Seg":
         a, _, b = s.strip().partition(" -> ")
         x0, y0 = parse_tup(a)
         x1, y1 = parse_tup(b)
@@ -67,5 +67,5 @@ def main():
     print(overlaps)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
